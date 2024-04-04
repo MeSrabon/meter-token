@@ -29,7 +29,7 @@ We welcome contributions to Token Sorter! Whether you're interested in fixing bu
 
 ### How to Contribute
 
-1. **Fork** the [repository](https://github.com/MeSrabon/token-sorter) on GitHub.
+1. **Fork** the [repository](https://github.com/MeSrabon/meter-token) on GitHub.
 2. **Clone** your fork to your local machine.
 3. **Create a new branch** for your changes.
 4. **Make** your changes in the new branch.
@@ -38,7 +38,7 @@ We welcome contributions to Token Sorter! Whether you're interested in fixing bu
 
 ### Discussion and Questions
 
-If you have questions, suggestions, or want to discuss potential improvements, feel free to [open an issue](https://github.com/MeSrabon/token-sorter/issue) in the repository.
+If you have questions, suggestions, or want to discuss potential improvements, feel free to [open an issue](https://github.com/MeSrabon/meter-token/issues) in the repository.
 
 ## License
 
