@@ -46,10 +46,28 @@ function updateTable(currentIndex, startingSequence) {
     }
 }
 
+function parseInput(input) {
+    // Token extraction
+    const tokenRegex = /\b(\d{4}-\d{4}-\d{4}-\d{4}-\d{4})\b/g;
+    const tokenMatches = input.match(tokenRegex);
+    tokens = tokenMatches || [];
+
+    // Sequence number extraction
+    const seqRegex = /SeqNo:(-?\d+)|Seq-(\d+)/;
+    const seqMatch = input.match(seqRegex);
+    let startSequence = 0;
+
+    if (seqMatch) {
+        startSequence = parseInt(seqMatch[1] || seqMatch[2], 10);
+    }
+
+    return startSequence;
+}
+
 document.getElementById('startButton').addEventListener('click', function() {
     const input = document.getElementById('tokenInput').value.trim();
-    const sequenceRegex = /\b(\d{4}-\d{4}-\d{4}-\d{4}-\d{4})\b/g;
-    tokens = input.match(sequenceRegex);
+    const startSequence = parseInput(input);
+
     const warningDiv = document.getElementById('warning');
     const tokenDisplay = document.getElementById('tokenDisplay');
     const navigation = document.querySelector('.navigation');
@@ -58,60 +76,31 @@ document.getElementById('startButton').addEventListener('click', function() {
     tokenDisplay.style.display = 'none';
     navigation.style.display = 'none';
 
-    if (!tokens || tokens.length === 0) {
+    if (tokens.length === 0) {
         warningDiv.textContent = 'Please enter a valid token message.';
         warningDiv.style.display = 'block';
     } else {
-        const sequenceInfoRegex = /SeqNo:(-?\d+)=(-?\d+)/;
-        const match = input.match(sequenceInfoRegex);
+        createTable(startSequence);
+        currentIndex = 0;
+        displayToken(currentIndex);
+        updateTable(currentIndex, startSequence);
+        this.style.display = 'none';
+        setTimeout(() => {
+            const contentAboveFooter = document.getElementById('tokenTableContainer');
+            const footer = document.querySelector('footer');
 
-        if (match) {
-            const startSequence = parseInt(match[1], 10);
-            const numTokens = parseInt(match[2], 10) + 1;
-            createTable(startSequence);
-            currentIndex = 0;
-            displayToken(currentIndex);
-            updateTable(currentIndex, startSequence);
-            this.style.display = 'none';
-            setTimeout(() => {
-                const contentAboveFooter = document.getElementById('tokenTableContainer');
-                const footer = document.querySelector('footer');
+            const contentRect = contentAboveFooter.getBoundingClientRect();
+            const footerRect = footer.getBoundingClientRect();
 
-                const contentRect = contentAboveFooter.getBoundingClientRect();
-                const footerRect = footer.getBoundingClientRect();
+            const scrollToPosition = window.scrollY + contentRect.bottom - window.innerHeight + footerRect.height;
 
-                const scrollToPosition = window.scrollY + contentRect.bottom - window.innerHeight + footerRect.height;
-
-                window.scrollTo({
-                    top: scrollToPosition,
-                    behavior: 'smooth'
-                });
-            }, 100);
-            document.getElementById('tokenInput').style.display = 'none';
-            document.getElementById('newToken').style.display = 'inline-block';
-        } else {
-            createTable(0);
-            currentIndex = 0;
-            displayToken(currentIndex);
-            updateTable(currentIndex, 0);
-            this.style.display = 'none';
-            setTimeout(() => {
-                const contentAboveFooter = document.getElementById('tokenTableContainer');
-                const footer = document.querySelector('footer');
-
-                const contentRect = contentAboveFooter.getBoundingClientRect();
-                const footerRect = footer.getBoundingClientRect();
-
-                const scrollToPosition = window.scrollY + contentRect.bottom - window.innerHeight + footerRect.height;
-
-                window.scrollTo({
-                    top: scrollToPosition,
-                    behavior: 'smooth'
-                });
-            }, 100);
-            document.getElementById('tokenInput').style.display = 'none';
-            document.getElementById('newToken').style.display = 'inline-block';
-        }
+            window.scrollTo({
+                top: scrollToPosition,
+                behavior: 'smooth'
+            });
+        }, 100);
+        document.getElementById('tokenInput').style.display = 'none';
+        document.getElementById('newToken').style.display = 'inline-block';
     }
 });
 
@@ -124,7 +113,7 @@ document.getElementById('nextToken').addEventListener('click', function() {
         doneTokens.add(currentIndex);
         currentIndex++;
         displayToken(currentIndex);
-        updateTable(currentIndex);
+        updateTable(currentIndex, parseInput(document.getElementById('tokenInput').value.trim()));
     }
 });
 
@@ -135,6 +124,6 @@ document.getElementById('prevToken').addEventListener('click', function() {
         }
         currentIndex--;
         displayToken(currentIndex);
-        updateTable(currentIndex);
+        updateTable(currentIndex, parseInput(document.getElementById('tokenInput').value.trim()));
     }
 });
